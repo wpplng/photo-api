@@ -24,8 +24,8 @@ module.exports = (bookshelf) => {
 			},
 
 			// login metod
-			login: async function (username, password) {
-				const user = await new this({ username }).fetch({
+			async login(email, password) {
+				const user = await new this({ email }).fetch({
 					require: false,
 				});
 				if (!user) {
