@@ -5,7 +5,13 @@
 const { body } = require('express-validator');
 const models = require('../models');
 
-const createRules = [
+const createPhoto = [
+	body('title').trim().notEmpty(),
+	body('url').trim().notEmpty(),
+	body('comment').optional().trim(),
+];
+
+const createUser = [
 	body('email')
 		.isLength({ min: 3 })
 		.custom(async (value) => {
@@ -24,5 +30,6 @@ const createRules = [
 ];
 
 module.exports = {
-	createRules,
+	createPhoto,
+	createUser,
 };

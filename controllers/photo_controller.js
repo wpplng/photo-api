@@ -5,7 +5,7 @@
 const { matchedData, validationResult } = require('express-validator');
 const { Photo, User } = require('../models');
 
-/* Get all photos for a user */
+/* Get all photos for a user (GET /) */
 const index = async (req, res) => {
 	// query db for user and photos relation
 	let user = null;
@@ -32,7 +32,7 @@ const index = async (req, res) => {
 	});
 };
 
-// Get a specific id (GET /id)
+/* Get a specific id (GET /:photoId) */
 const show = async (req, res) => {
 	let photo = null;
 	try {
@@ -63,8 +63,36 @@ const show = async (req, res) => {
 	});
 };
 
-// Create (POST /)
-const store = async (req, res) => {};
+/* Create photo (POST /) */
+const store = async (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		res.status(422).send({
+			status: 'fail',
+			data: errors.array(),
+		});
+		return;
+	}
+
+	const validData = matchedData(req);
+	validData.user_id = req.user.data.id;
+
+	try {
+		const photo = await new Photo(validData).save();
+		res.send({
+			status: 'success',
+			data: {
+				photo,
+			},
+		});
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown in database when creating a new photo.',
+		});
+		throw error;
+	}
+};
 
 // Update a specific id (PUT /id)
 const update = async (req, res) => {

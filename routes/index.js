@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { validateJwtToken } = require('../controllers/middlewares/auth');
 const { login, refresh, register } = require('../controllers/auth_controller');
-const { createRules } = require('../validation/rules');
+const { createUser } = require('../validation/rules');
 
 /* GET / */
 router.get('/', (req, res) => {
@@ -22,6 +22,6 @@ router.post('/login', login);
 router.post('/refresh', refresh);
 
 /* /register */
-router.post('/register', [createRules], register);
+router.post('/register', [createUser], register);
 
 module.exports = router;
