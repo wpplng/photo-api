@@ -65,8 +65,36 @@ const show = async (req, res) => {
 	});
 };
 
-// Create (POST /)
-const store = async (req, res) => {};
+/* Create album (POST /) */
+const store = async (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		res.status(422).send({
+			status: 'fail',
+			data: errors.array(),
+		});
+		return;
+	}
+
+	const validData = matchedData(req);
+	validData.user_id = req.user.data.id;
+
+	try {
+		const album = await new Album(validData).save();
+		res.send({
+			status: 'success',
+			data: {
+				album,
+			},
+		});
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown in database when creating a new album.',
+		});
+		throw error;
+	}
+};
 
 // Update a specific id (PUT /id)
 const update = async (req, res) => {

@@ -5,6 +5,8 @@
 const { body } = require('express-validator');
 const models = require('../models');
 
+const createAlbum = [body('title').trim().notEmpty()];
+
 const createPhoto = [
 	body('title').trim().notEmpty(),
 	body('url').trim().notEmpty(),
@@ -30,6 +32,7 @@ const createUser = [
 ];
 
 module.exports = {
+	createAlbum,
 	createPhoto,
 	createUser,
 };
