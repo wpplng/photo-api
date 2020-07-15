@@ -5,11 +5,13 @@
 const { body } = require('express-validator');
 const models = require('../models');
 
-const createAlbum = [body('title').trim().notEmpty()];
+const addPhotoToAlbum = [body('photo_id').trim().isNumeric()];
+
+const createAlbum = [body('title').trim().isLength({ min: 2 })];
 
 const createPhoto = [
-	body('title').trim().notEmpty(),
-	body('url').trim().notEmpty(),
+	body('title').trim().isLength({ min: 2 }),
+	body('url').trim().isLength({ min: 2 }),
 	body('comment').optional().trim(),
 ];
 
@@ -32,6 +34,7 @@ const createUser = [
 ];
 
 module.exports = {
+	addPhotoToAlbum,
 	createAlbum,
 	createPhoto,
 	createUser,

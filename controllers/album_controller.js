@@ -54,7 +54,7 @@ const show = async (req, res) => {
 			status: 'error',
 			message: 'Exception thrown in database when fetching albums.',
 		});
-		return;
+		throw error;
 	}
 };
 
@@ -89,8 +89,47 @@ const store = async (req, res) => {
 	}
 };
 
-/* Add photo to album (POST /:albumId/photos) obs inte klar */
-const addPhoto = async (req, res) => {};
+/* Add photo to album (POST /:albumId/photos) */
+const addPhoto = async (req, res) => {
+	// Finds the validation errors in this request
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		res.status(422).send({
+			status: 'fail',
+			data: errors.array(),
+		});
+		return;
+	}
+
+	try {
+		// get photo to attach
+		const photo = await Photo.fetchById(
+			req.body.photo_id,
+			req.user.data.id
+		);
+
+		// fetch Album model
+		const album = await Album.fetchById(
+			req.params.albumId,
+			req.user.data.id
+		);
+
+		// attach photos to album
+		const result = await album.photos().attach(photo);
+
+		res.status(201).send({
+			status: 'success',
+			data: result,
+		});
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown when trying to add photo to album.',
+		});
+		throw error;
+	}
+};
 
 // Update a specific id (PUT /id)
 const update = async (req, res) => {

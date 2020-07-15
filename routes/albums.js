@@ -12,7 +12,7 @@ const {
 	update,
 	destroy,
 } = require('../controllers/album_controller');
-const { createAlbum } = require('../validation/rules');
+const { addPhotoToAlbum, createAlbum } = require('../validation/rules');
 
 /* GET / all albums */
 router.get('/', index);
@@ -24,7 +24,7 @@ router.get('/:albumId', show);
 router.post('/', [createAlbum], store);
 
 /* POST /:albumId/photos */
-router.post('/:albumId/photos', addPhoto);
+router.post('/:albumId/photos', [addPhotoToAlbum], addPhoto);
 
 /* PUT /:albumId update album by id */
 router.put('/:albumId', update);
