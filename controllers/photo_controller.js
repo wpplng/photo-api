@@ -86,7 +86,7 @@ const store = async (req, res) => {
 	}
 };
 
-// Update a specific id (PUT /id)
+/* Update a specific id (PUT /:photoId) */
 const update = async (req, res) => {
 	res.status(405).send({
 		status: 'fail',
@@ -95,8 +95,33 @@ const update = async (req, res) => {
 	});
 };
 
-// Delete a specific id (DELETE /id)
-const destroy = async (req, res) => {};
+/* Delete photo (DELETE /:photoId) and albums associations */
+const destroy = async (req, res) => {
+	try {
+		// fetch Photo model
+		const photo = await Photo.fetchById(
+			req.params.photoId,
+			req.user.data.id
+		);
+
+		// detach albums from photos
+		await photo.albums().detach();
+
+		// delete photo
+		await photo.destroy();
+
+		res.send({
+			status: 'success',
+			data: null,
+		});
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown when trying to delete album.',
+		});
+		throw error;
+	}
+};
 
 module.exports = {
 	index,

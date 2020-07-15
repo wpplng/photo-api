@@ -131,7 +131,7 @@ const addPhoto = async (req, res) => {
 	}
 };
 
-// Update a specific id (PUT /id)
+/* Update a specific id (PUT /:albumId) */
 const update = async (req, res) => {
 	res.status(405).send({
 		status: 'fail',
@@ -151,6 +151,8 @@ const destroy = async (req, res) => {
 
 		// detach photos from album
 		await album.photos().detach();
+
+		// delete album
 		await album.destroy();
 
 		res.send({
