@@ -34,33 +34,25 @@ const index = async (req, res) => {
 
 /* Get a specific id (GET /:photoId) */
 const show = async (req, res) => {
-	let photo = null;
 	try {
-		photo = await Photo.fetchById(req.params.photoId);
+		const photo = await Photo.fetchById(
+			req.params.photoId,
+			req.user.data.id
+		);
+
+		res.send({
+			status: 'success',
+			data: {
+				photo,
+			},
+		});
 	} catch (error) {
-		res.status(404).send({
-			status: 'fail',
-			data: 'Photo not found.',
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown in database when fetching photos.',
 		});
-		return;
+		throw error;
 	}
-
-	const userId = photo.get('user_id');
-
-	if (userId !== req.user.data.id) {
-		res.status(401).send({
-			status: 'fail',
-			data: `You don't have access to that photo.`,
-		});
-		return;
-	}
-
-	res.send({
-		status: 'success',
-		data: {
-			photo,
-		},
-	});
 };
 
 /* Create photo (POST /) */
