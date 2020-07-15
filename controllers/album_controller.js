@@ -140,8 +140,31 @@ const update = async (req, res) => {
 	});
 };
 
-// Delete a specific id (DELETE /id)
-const destroy = async (req, res) => {};
+/* Delete album (DELETE /:albumId) and photos associations */
+const destroy = async (req, res) => {
+	try {
+		// fetch Album model
+		const album = await Album.fetchById(
+			req.params.albumId,
+			req.user.data.id
+		);
+
+		// detach photos from album
+		await album.photos().detach();
+		await album.destroy();
+
+		res.send({
+			status: 'success',
+			data: null,
+		});
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown when trying to delete album.',
+		});
+		throw error;
+	}
+};
 
 module.exports = {
 	index,
