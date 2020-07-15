@@ -8,6 +8,7 @@ const {
 	index,
 	show,
 	store,
+	addPhoto,
 	update,
 	destroy,
 } = require('../controllers/album_controller');
@@ -21,6 +22,9 @@ router.get('/:albumId', show);
 
 /* POST / create a new album */
 router.post('/', [createAlbum], store);
+
+/* POST /:albumId/photos */
+router.post('/:albumId/photos', addPhoto);
 
 /* PUT /:albumId update album by id */
 router.put('/:albumId', update);

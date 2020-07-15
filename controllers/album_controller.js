@@ -3,7 +3,7 @@
  */
 
 const { matchedData, validationResult } = require('express-validator');
-const { Album, User } = require('../models');
+const { Album, Photo, User } = require('../models');
 
 /* Get albums for a user (GET /) */
 const index = async (req, res) => {
@@ -34,35 +34,28 @@ const index = async (req, res) => {
 
 /* Get a specific id (GET /:albumId) */
 const show = async (req, res) => {
-	let album = null;
 	try {
-		album = await Album.fetchById(req.params.albumId, {
-			withRelated: 'photos',
+		const album = await Album.fetchById(
+			req.params.albumId,
+			req.user.data.id,
+			{
+				withRelated: 'photos',
+			}
+		);
+
+		res.send({
+			status: 'success',
+			data: {
+				album,
+			},
 		});
 	} catch (error) {
-		res.status(404).send({
-			status: 'fail',
-			data: 'Album not found.',
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown in database when fetching albums.',
 		});
 		return;
 	}
-
-	const userId = album.get('user_id');
-
-	if (userId !== req.user.data.id) {
-		res.status(401).send({
-			status: 'fail',
-			data: `You don't have access to that album.`,
-		});
-		return;
-	}
-
-	res.send({
-		status: 'success',
-		data: {
-			album,
-		},
-	});
 };
 
 /* Create album (POST /) */
@@ -96,6 +89,9 @@ const store = async (req, res) => {
 	}
 };
 
+/* Add photo to album (POST /:albumId/photos) obs inte klar */
+const addPhoto = async (req, res) => {};
+
 // Update a specific id (PUT /id)
 const update = async (req, res) => {
 	res.status(405).send({
@@ -112,6 +108,7 @@ module.exports = {
 	index,
 	show,
 	store,
+	addPhoto,
 	update,
 	destroy,
 };
