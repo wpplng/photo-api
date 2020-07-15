@@ -3,7 +3,7 @@
  */
 
 const { matchedData, validationResult } = require('express-validator');
-const { Album, Photo, User } = require('../models');
+const { Album, User } = require('../models');
 
 /* Get albums for a user (GET /) */
 const index = async (req, res) => {
@@ -103,11 +103,8 @@ const addPhoto = async (req, res) => {
 	}
 
 	try {
-		// get photo to attach
-		const photo = await Photo.fetchById(
-			req.body.photo_id,
-			req.user.data.id
-		);
+		const validData = matchedData(req);
+		const photoIds = validData.photo_ids;
 
 		// fetch Album model
 		const album = await Album.fetchById(
@@ -115,12 +112,14 @@ const addPhoto = async (req, res) => {
 			req.user.data.id
 		);
 
+		// detach photos from album (if already existing in album)
+		await album.photos().detach(photoIds);
 		// attach photos to album
-		const result = await album.photos().attach(photo);
+		await album.photos().attach(photoIds);
 
 		res.status(201).send({
 			status: 'success',
-			data: result,
+			data: null,
 		});
 	} catch (error) {
 		res.status(500).send({

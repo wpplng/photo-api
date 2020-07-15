@@ -5,7 +5,17 @@
 const { body } = require('express-validator');
 const models = require('../models');
 
-const addPhotoToAlbum = [body('photo_id').trim().isNumeric()];
+const addPhotosToAlbum = [
+	body('photo_ids')
+		.notEmpty()
+		.isArray()
+		.isNumeric()
+		.custom(async (values, { req }) => {
+			for (let i = 0; i < values.length; i++) {
+				await models.Photo.fetchById(values[i], req.user.data.id);
+			}
+		}),
+];
 
 const createAlbum = [body('title').trim().isLength({ min: 2 })];
 
@@ -34,7 +44,7 @@ const createUser = [
 ];
 
 module.exports = {
-	addPhotoToAlbum,
+	addPhotosToAlbum,
 	createAlbum,
 	createPhoto,
 	createUser,
