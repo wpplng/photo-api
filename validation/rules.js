@@ -43,9 +43,12 @@ const createUser = [
 	body('last_name').isLength({ min: 2 }),
 ];
 
+const updateAlbum = [body('title').optional().trim().isLength({ min: 2 })];
+
 module.exports = {
 	addPhotosToAlbum,
 	createAlbum,
 	createPhoto,
 	createUser,
+	updateAlbum,
 };

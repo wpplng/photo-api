@@ -132,11 +132,40 @@ const addPhoto = async (req, res) => {
 
 /* Update a specific id (PUT /:albumId) */
 const update = async (req, res) => {
-	res.status(405).send({
-		status: 'fail',
-		data: null,
-		message: 'Method not allowed',
-	});
+	// Finds the validation errors in this request
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		res.status(422).send({
+			status: 'fail',
+			data: errors.array(),
+		});
+		return;
+	}
+
+	try {
+		const validData = matchedData(req);
+
+		// fetch Album model
+		const album = await Album.fetchById(
+			req.params.albumId,
+			req.user.data.id
+		);
+
+		// save changes to album
+		await album.save(validData);
+
+		res.status(204).send({
+			status: 'success',
+			data: null,
+		});
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown when trying to update album.',
+		});
+		throw error;
+	}
 };
 
 /* Delete album (DELETE /:albumId) and photos associations */
