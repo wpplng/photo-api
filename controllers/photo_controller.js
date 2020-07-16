@@ -88,11 +88,40 @@ const store = async (req, res) => {
 
 /* Update a specific id (PUT /:photoId) */
 const update = async (req, res) => {
-	res.status(405).send({
-		status: 'fail',
-		data: null,
-		message: 'Method not allowed',
-	});
+	// Finds the validation errors in this request
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		res.status(422).send({
+			status: 'fail',
+			data: errors.array(),
+		});
+		return;
+	}
+
+	try {
+		const validData = matchedData(req);
+
+		// fetch Photo model
+		const photo = await Photo.fetchById(
+			req.params.photoId,
+			req.user.data.id
+		);
+
+		// save changes to photo
+		await photo.save(validData);
+
+		res.status(204).send({
+			status: 'success',
+			data: null,
+		});
+	} catch (error) {
+		res.status(500).send({
+			status: 'error',
+			message: 'Exception thrown when trying to update photo.',
+		});
+		throw error;
+	}
 };
 
 /* Delete photo (DELETE /:photoId) and albums associations */

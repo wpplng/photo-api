@@ -11,7 +11,7 @@ const {
 	update,
 	destroy,
 } = require('../controllers/photo_controller');
-const { createPhoto } = require('../validation/rules');
+const { createPhoto, updatePhoto } = require('../validation/rules');
 
 /* GET / all photos */
 router.get('/', index);
@@ -23,7 +23,7 @@ router.get('/:photoId', show);
 router.post('/', [createPhoto], store);
 
 /* PUT /:photoId update photo by id */
-router.put('/:photoId', update);
+router.put('/:photoId', [updatePhoto], update);
 
 /* DELETE /:photoId delete a photo by id */
 router.delete('/:photoId', destroy);

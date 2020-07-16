@@ -21,7 +21,7 @@ const createAlbum = [body('title').trim().isLength({ min: 2 })];
 
 const createPhoto = [
 	body('title').trim().isLength({ min: 2 }),
-	body('url').trim().isLength({ min: 2 }),
+	body('url').trim().isLength({ min: 2 }).isURL(),
 	body('comment').optional().trim(),
 ];
 
@@ -45,10 +45,17 @@ const createUser = [
 
 const updateAlbum = [body('title').optional().trim().isLength({ min: 2 })];
 
+const updatePhoto = [
+	body('title').optional().trim().isLength({ min: 2 }),
+	body('url').optional().trim().isLength({ min: 2 }).isURL(),
+	body('comment').optional().trim(),
+];
+
 module.exports = {
 	addPhotosToAlbum,
 	createAlbum,
 	createPhoto,
 	createUser,
 	updateAlbum,
+	updatePhoto,
 };
